@@ -1,197 +1,204 @@
-# Docker-Tutorial
+# Docker for AI & ML
 
-Welcome to the **Docker-Tutorial** repository! This repository focuses on using Docker for containerizing applications and managing development environments. Whether you're new to Docker or looking to enhance your containerization skills, you'll find tutorials, examples, and projects here to support your learning journey.
+Practical, beginner-friendly examples for packaging Python applications and machine-learning models with Docker. Start with a small Flask container, add Redis as a second service with Docker Compose, then run an Iris classifier through a web interface.
 
-## 📋 Contents
+<p align="center">
+  <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white" alt="Docker"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white" alt="Python"></a>
+  <a href="https://flask.palletsprojects.com/"><img src="https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white" alt="Flask"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="Apache 2.0 License"></a>
+</p>
 
-- [Introduction](#introduction)
-- [Topics Covered](#topics-covered)
-- [Getting Started](#getting-started)
-- [Best Practices](#best-practices)
-- [FAQ](#faq)
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Examples at a glance](#examples-at-a-glance)
+- [Repository layout](#repository-layout)
+- [Prerequisites](#prerequisites)
+- [Quick start](#quick-start)
+- [Run each example](#run-each-example)
+- [Iris model details](#iris-model-details)
+- [Common Docker commands](#common-docker-commands)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
-- [Additional Resources](#additional-resources)
-- [Challenges Faced](#challenges-faced)
-- [Lessons Learned](#lessons-learned)
-- [Why I Created This Repository](#why-i-created-this-repository)
 - [License](#license)
-- [Contact](#contact)
+- [Connect with me](#connect-with-me)
 
----
+## What you will learn
 
-## 📖 Introduction
+- Build a Docker image from a Python application and its `Dockerfile`.
+- Publish a container port to your local machine.
+- Run a Flask service alongside Redis using Docker Compose.
+- Package a saved scikit-learn model and serve predictions from a Flask app.
+- Rebuild images after changing application code or dependencies.
 
-This repository provides comprehensive resources for learning and using Docker, covering fundamental concepts, practical examples, and hands-on projects. Whether you're containerizing applications, managing development environments, or deploying services, this repository will guide you through the basics and advanced uses of Docker.
+## Examples at a glance
 
----
+| Example | What it demonstrates | Local address |
+| --- | --- | --- |
+| [Flask Hello World](flask-hello-world) | A minimal Flask app packaged as a Docker image | `http://localhost:5000` |
+| [Flask + Redis Counter](flask-redis-counter) | A web service and Redis running together with Compose | `http://localhost:8000` |
+| [Iris Classifier](iris-classifier) | A Flask UI that loads a scikit-learn model and predicts an Iris species | `http://localhost:5000` |
 
-## 🔍 Topics Covered
+## Repository layout
 
-- **Docker Basics:** Installation, configuration, and basic commands.
-- **Container Management:** Creating, running, and managing Docker containers.
-- **Image Creation:** Building and managing Docker images.
-- **Docker Compose:** Defining and running multi-container Docker applications.
+```text
+.
+├── flask-hello-world/
+├── flask-redis-counter/
+├── iris-classifier/
+│   ├── data/                     # Iris CSV data
+│   ├── models/                  # Saved model used by the web app
+│   ├── scripts/                 # Model training script
+│   ├── static/                  # CSS and JavaScript
+│   └── templates/               # Flask HTML template
+├── LICENSE
+└── README.md
+```
 
----
+Each example is self-contained and has its own `Dockerfile` and dependency list. Run Docker commands from that example's directory so the build context and relative paths are correct.
 
-## 🚀 Getting Started
+## Prerequisites
 
-To get started with Docker projects, follow these steps:
+- [Docker Desktop](https://docs.docker.com/get-docker/) (Windows/macOS) or Docker Engine (Linux).
+- Docker Compose v2, included with current Docker Desktop and available as `docker compose`.
+- Git, if you are cloning this repository.
 
-1. **Clone the repository:**
+Check that Docker is installed and running:
 
-   ```bash
-   git clone https://github.com/Md-Emon-Hasan/Docker-Tutorial.git
-   ```
+```bash
+docker --version
+docker compose version
+```
 
-2. **Navigate to the project directory:**
+## Quick start
 
-   ```bash
-   cd Docker-Tutorial
-   ```
+Clone the repository and enter the first example:
 
-3. **Install dependencies (if applicable):**
+```bash
+git clone https://github.com/Md-Emon-Hasan/Docker-for-AI-and-ML.git
+cd Docker-for-AI-and-ML/flask-hello-world
+```
 
-   - Some examples might require additional dependencies. Check the `requirements.txt` or `docker-compose.yml` for specific instructions.
+Build and run the container:
 
-4. **Explore topics and examples:**
+```bash
+docker build -t flask-hello-world .
+docker run --rm -p 5000:5000 flask-hello-world
+```
 
-   - Each directory contains tutorials, examples, or projects related to specific Docker topics.
+Open [http://localhost:5000](http://localhost:5000). Stop the running container with `Ctrl+C`.
 
-5. **Run the examples:**
+## Run each example
 
-   - Follow the instructions in each example's README file to execute the Docker commands and see Docker in action.
+### 1. Flask Hello World
 
----
+This is the smallest example: one Flask route, a requirements file, and a Docker image.
 
-## 🌟 Best Practices
+```bash
+cd flask-hello-world
+docker build -t flask-hello-world .
+docker run --rm -p 5000:5000 flask-hello-world
+```
 
-Recommendations for using Docker effectively:
+The app listens on port `5000` inside the container. The `-p 5000:5000` option maps it to port `5000` on your computer.
 
-- **Container Organization:** Keep your Dockerfiles and images well-organized.
-- **Image Management:** Regularly build and manage Docker images for efficient workflows.
-- **Networking:** Configure Docker networking to ensure seamless communication between containers.
-- **Documentation:** Document Docker configurations and usage for better team collaboration.
+### 2. Flask + Redis Counter
 
----
+Docker Compose starts both the Flask app and Redis. The app connects to Redis using the Compose service name `redis` and increments a counter for each page visit.
 
-## ❓ FAQ
+```bash
+cd flask-redis-counter
+docker compose up --build
+```
 
-**Q: What is Docker?**
-A: Docker is a platform for developing, shipping, and running applications inside lightweight containers.
+Visit [http://localhost:8000](http://localhost:8000) and refresh to increment the counter. The Compose file maps host port `8000` to container port `5000`.
 
-**Q: How can I contribute to this repository?**
-A: Please refer to the [Contributing](#contributing) section for guidelines on how to contribute.
+Stop and remove the containers and network with:
 
-**Q: Where can I find more information about Docker?**
-A: Visit the [Docker Documentation](https://docs.docker.com/) for detailed information and tutorials.
+```bash
+docker compose down
+```
 
-**Q: How do I report issues or bugs?**
-A: Please use the [Issues](https://github.com/Md-Emon-Hasan/Docker-Tutorial/issues) section of this repository to report any issues or bugs.
+### 3. Iris Classifier
 
-**Q: Can I use Docker with other tools?**
-A: Yes, Docker integrates with various tools and frameworks. Refer to the [Integration](#integration) section for details.
+This example serves a saved Random Forest classifier through a Flask form. Enter sepal and petal measurements in centimeters to get a predicted species.
 
----
+```bash
+cd iris-classifier
+docker build -t iris-classifier .
+docker run --rm -p 5000:5000 iris-classifier
+```
 
-## 🛠️ Troubleshooting
+Open [http://localhost:5000](http://localhost:5000), enter all four measurements, and select **Predict**. The image includes `models/iris_model.pkl`, which the app loads at startup.
 
-Common issues and their solutions:
+## Iris model details
 
-- **Issue: Installation Errors**
-  *Solution:* Ensure Docker is properly installed and running on your system. Check the Docker documentation for troubleshooting steps.
+The included training script trains a `RandomForestClassifier` on scikit-learn's built-in Iris dataset and saves the result to `models/iris_model.pkl`:
 
-- **Issue: Container Failures**
-  *Solution:* Verify Dockerfile configurations and container logs for error details.
+```bash
+cd iris-classifier
+python -m venv .venv
+```
 
-- **Issue: Networking Issues**
-  *Solution:* Check Docker network settings and ensure containers are correctly connected.
+Activate the virtual environment, then install the example dependencies and train:
 
----
+```bash
+python -m pip install -r requirements.txt
+python scripts/train_model.py
+```
 
-## 🤝 Contributing
+On Windows PowerShell, activate it with `.\.venv\Scripts\Activate.ps1`; on macOS/Linux, use `source .venv/bin/activate`.
 
-Contributions to improve or expand the repository are welcome! Here's how you can contribute:
+The app expects the model file at `models/iris_model.pkl`. Rebuild the Docker image after training to include an updated model:
 
-1. **Fork the repository.**
-2. **Create a new branch:**
+```bash
+docker build -t iris-classifier .
+```
 
-   ```bash
-   git checkout -b feature/new-feature
-   ```
+> **Model file note:** `joblib`/pickle model files can execute code when loaded. Only load model files you created or otherwise trust.
 
-3. **Make your changes:**
+## Common Docker commands
 
-   - Add new tutorials, examples, or improve existing documentation.
+| Command | Purpose |
+| --- | --- |
+| `docker build -t NAME .` | Build an image from the current example directory |
+| `docker image ls` | List local images |
+| `docker ps` | List running containers |
+| `docker ps -a` | List all containers, including stopped ones |
+| `docker logs CONTAINER` | View a container's output |
+| `docker stop CONTAINER` | Stop a running container |
+| `docker compose up --build` | Build and start services declared in Compose |
+| `docker compose down` | Stop and remove Compose containers and network |
 
-4. **Commit your changes:**
+## Troubleshooting
 
-   ```bash
-   git commit -am 'Add a new feature or update'
-   ```
+- **Docker cannot connect to the daemon:** Start Docker Desktop or the Docker service, then retry.
+- **Port is already in use:** Choose another host port, for example `-p 5001:5000`, and open `http://localhost:5001`.
+- **The Iris app cannot find its model:** Build and run from `iris-classifier`; make sure `models/iris_model.pkl` exists.
+- **The Redis example cannot connect:** Start it with `docker compose up --build` from `flask-redis-counter`. The app expects the Compose service hostname `redis`.
+- **Changes do not appear in the container:** Rebuild the image with `docker build --no-cache -t NAME .` or use `docker compose up --build`.
 
-5. **Push to the branch:**
+## Contributing
 
-   ```bash
-   git push origin feature/new-feature
-   ```
+Issues, corrections, and new examples are welcome. To contribute:
 
-6. **Submit a pull request.**
+1. Fork the repository and create a branch for your change.
+2. Keep each example self-contained with its own Docker configuration and dependencies.
+3. Update this README when adding or changing an example.
+4. Open a pull request describing the change and how to run it.
 
----
+For bugs or ideas, [open an issue](https://github.com/Md-Emon-Hasan/Docker-for-AI-and-ML/issues).
 
-## 📚 Additional Resources
+## License
 
-Here are some additional resources to help you learn more about Docker and related topics:
+This project is distributed under the [Apache License 2.0](LICENSE).
 
-- **Docker Official Website:** [docker.com](https://www.docker.com/)
-- **Docker Documentation:** [docs.docker.com](https://docs.docker.com/)
-- **Container Orchestration:** [Kubernetes Documentation](https://kubernetes.io/docs/home/)
-- **Docker Best Practices:** [Docker Best Practices](https://docs.docker.com/develop/dev-best-practices/)
+## Connect with me
 
----
-
-## 💪 Challenges Faced
-
-Throughout the development of this repository, challenges were encountered, including:
-
-- Understanding Docker's complex configurations and options.
-- Integrating Docker with different development environments.
-- Managing multi-container setups effectively.
-
----
-
-## 📚 Lessons Learned
-
-Key lessons learned from developing this repository include:
-
-- Mastery of Docker fundamentals and best practices.
-- Practical application of Docker in containerizing and deploying applications.
-- Importance of clear documentation and structured Dockerfile configurations.
-
----
-
-## 🌟 Why I Created This Repository
-
-I created this repository to provide a structured and beginner-friendly resource for learning Docker. It aims to empower developers and system administrators with the tools and knowledge to effectively use Docker for containerization and environment management.
-
----
-
-## 📝 License
-
-This repository is licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0). See the [LICENSE](LICENSE) file for more details.
-
----
-
-## 📬 Contact
-
-- **Email:** [iconicemon01@gmail.com](mailto:iconicemon01@gmail.com)
-- **WhatsApp:** [+8801834363533](https://wa.me/8801834363533)
-- **GitHub:** [Md-Emon-Hasan](https://github.com/Md-Emon-Hasan)
-- **LinkedIn:** [Md Emon Hasan](https://www.linkedin.com/in/md-emon-hasan)
-- **Facebook:** [Md Emon Hasan](https://www.facebook.com/mdemon.hasan2001/)
-
----
-
-Feel free to adapt and expand upon this template based on your specific needs and the nature of your Docker repository!
+- 🌐 **Portfolio:** [emonlabs-ai.hitechparks.com](https://emonlabs-ai.hitechparks.com)
+- 💻 **GitHub:** [Md-Emon-Hasan](https://github.com/Md-Emon-Hasan)
+- 💼 **LinkedIn:** [Md Emon Hasan](https://www.linkedin.com/in/md-emon-hasan-695483237/)
+- 🤗 **Hugging Face:** [emonHasan01](https://huggingface.co/emonHasan01)
+- 📧 **Email:** [emon.mlengineer@gmail.com](mailto:emon.mlengineer@gmail.com)
+- 📱 **WhatsApp:** [+880 1834-363533](https://wa.me/8801834363533)
